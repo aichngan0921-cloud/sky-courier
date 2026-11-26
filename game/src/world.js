@@ -31,19 +31,19 @@ export function terrainHeight(x, z) {
 
 export function createWorld(random) {
   const clouds = [];
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < 22; i++) {
     clouds.push({
-      x: random.range(-1600, 1600), y: random.range(520, 820),
-      z: random.range(-400, 5200), s: random.range(90, 220),
+      x: random.range(-1600, 1600), y: random.range(520, 860),
+      z: random.range(-400, 5200), s: random.range(90, 240),
     });
   }
   const trees = [];
-  for (let i = 0; i < 130; i++) {
+  for (let i = 0; i < 180; i++) {
     const x = random.range(-900, 900);
     const z = random.range(100, 5000);
     if (Math.abs(x - RUNWAY.x) < 120 && z > RUNWAY.z - 300 && z < RUNWAY.z + RUNWAY.length + 300) continue;
     if (Math.abs(x - riverX(z)) < 50) continue;
-    trees.push({ x, z, s: random.range(10, 22) });
+    trees.push({ x, z, s: random.range(12, 26) });
   }
   const town = [];
   for (let i = 0; i < 26; i++) {
@@ -52,6 +52,25 @@ export function createWorld(random) {
       w: random.range(24, 44), h: random.range(30, 90),
     });
   }
+  // Patchwork fields: soft rectangles of farmland in varied greens and golds.
+  const fieldColors = ['#6aa84f', '#8bc34a', '#a8bf6a', '#c9a227', '#7fb069', '#93c572', '#5d9b4a', '#b5a642'];
+  const fields = [];
+  for (let i = 0; i < 40; i++) {
+    const x = random.range(-880, 880);
+    const z = random.range(150, 5000);
+    if (Math.abs(x - RUNWAY.x) < 220 && z > RUNWAY.z - 350 && z < RUNWAY.z + RUNWAY.length + 350) continue;
+    if (Math.abs(x - riverX(z)) < 90) continue;
+    fields.push({
+      x, z, w: random.range(130, 280), d: random.range(130, 280),
+      color: random.pick(fieldColors),
+    });
+  }
+  // Airfield buildings beside the runway: a control tower and two hangars.
+  const tower = { x: 150, z: 5050, h: 74 };
+  const hangars = [
+    { x: -170, z: 4900, w: 64, h: 26 },
+    { x: -170, z: 5060, w: 64, h: 26 },
+  ];
 
   const state = freshState();
   function freshState() {
@@ -102,6 +121,7 @@ export function createWorld(random) {
     const climb = input.pitch > 0 ? CLIMB_RATE : SINK_RATE;
     const vy = input.pitch * climb * (0.4 + 0.6 * p.throttle)
       - (p.speed < MIN_SPEED + 20 ? 26 : 0);
+    p.vy = vy;
     p.pitch = input.pitch * 0.35;
     p.y += vy * dt;
 
@@ -152,7 +172,7 @@ export function createWorld(random) {
   }
 
   return {
-    state, clouds, trees, town, step, reset, terrainHeight,
+    state, clouds, trees, town, fields, tower, hangars, step, reset, terrainHeight,
     ring: () => RINGS[state.ringIndex] ?? null,
     ringsLeft: () => RINGS.length - state.ringIndex,
   };

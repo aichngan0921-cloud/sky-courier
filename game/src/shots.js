@@ -11,15 +11,15 @@ export function stageShot(name, world) {
   if (name === 'play') {
     world.reset();
     const p = s.plane;
-    p.x = 60; p.y = 330; p.z = 1350; p.heading = 0.08; p.speed = 230;
+    p.x = 40; p.y = 340; p.z = 1050; p.heading = 0.10; p.speed = 230;
     p.bank = 0.18; p.throttle = 0.75; p.fuel = 78;
     s.score = 250; s.ringIndex = 1; s.ringsHit = 1; s.timeLeft = 108;
     return { screen: SCREEN_PLAY, best: 250 };
   }
-  // end: landed on the runway.
+  // end: on final approach to the runway, about to touch down.
   world.reset();
   const p = s.plane;
-  p.x = 0; p.y = 8; p.z = 4800; p.heading = 0; p.speed = 0; p.throttle = 0;
+  p.x = 0; p.y = 55; p.z = 4550; p.heading = 0; p.speed = 120; p.throttle = 0.2;
   p.fuel = 41;
   s.score = 1240; s.ringIndex = 5; s.ringsHit = 5; s.timeLeft = 42;
   s.status = 'landed'; s.landed = true;
